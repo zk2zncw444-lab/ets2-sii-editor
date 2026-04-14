@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETS2 SII Editor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Truck & Trailer .sii Editor</h1>
+        
+        <div class="upload-section">
+            <input type="file" id="fileInput" accept=".sii,.txt">
+            <span id="fileNameDisplay">Keine Datei ausgewählt</span>
+            
+            <button id="btnDownload" class="btn-download" style="display: none;">
+                📥 Datei herunterladen
+            </button>
+        </div>
+        
+        <div id="dashboard">
+            <p style="color: #888;">Bitte lade eine Datei hoch...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
