@@ -1,102 +1,123 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1a1a1a;
+    background-color: #121212;
     color: #f1f1f1;
-    margin: 0; padding: 20px;
+    margin: 0; padding: 0;
+    height: 100vh;
+    overflow: hidden; 
 }
 
-.container {
-    max-width: 1000px;
-    margin: auto;
-    background: #252525;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
+.app-wrapper { display: flex; height: 100%; width: 100%; }
 
-.upload-section {
-    background: #333;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    border-left: 4px solid #4CAF50;
-    flex-wrap: wrap;
-}
+/* SIDEBAR */
+.sidebar { width: 260px; background-color: #1e1e1e; border-right: 1px solid #333; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; }
+.sidebar h2 { color: #4CAF50; margin-top: 10px; margin-bottom: 30px; font-size: 1.5rem; text-align: center; }
+.nav-menu { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+.nav-btn { background: transparent; color: #ccc; border: none; text-align: left; padding: 12px 15px; font-size: 1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
+.nav-btn:hover { background: #333; color: #fff; }
+.nav-btn.active { background: #4CAF50; color: #fff; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); }
 
-#fileNameDisplay {
-    color: #4CAF50;
-    font-weight: bold;
-    font-size: 1.1rem;
-    flex-grow: 1; /* Schiebt den Button nach rechts */
-}
+/* SPRACHE */
+.lang-switcher { display: flex; justify-content: center; gap: 10px; margin-top: auto; padding-top: 20px; border-top: 1px solid #333; }
+.lang-btn { background: #333; color: #aaa; border: 1px solid #444; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+.lang-btn:hover { background: #444; }
+.lang-btn.active { background: #4CAF50; color: #fff; border-color: #4CAF50; }
 
-/* NEU: Design für den Download-Button */
-.btn-download {
-    background: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
+/* HAUPTBEREICH */
+.main-content { flex-grow: 1; background-color: #1a1a1a; padding: 40px; overflow-y: auto; }
+.tab-content { display: none; max-width: 1100px; margin: 0 auto; }
+.tab-content.active { display: block; }
 
-.btn-download:hover {
-    background: #45a049;
-    transform: translateY(-2px);
-}
+.content-header { margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+.content-header h1 { margin: 0; font-size: 1.8rem; color: #fff; }
 
-.btn-download:active {
-    transform: translateY(0);
-}
+/* SUB-NAVIGATION (Lackiererei vs Werkstatt) */
+.sub-nav { display: flex; gap: 10px; background: #252525; padding: 5px; border-radius: 8px; border: 1px solid #333;}
+.sub-btn { background: transparent; color: #aaa; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: all 0.2s; }
+.sub-btn:hover { color: #fff; }
+.sub-btn.active { background: #4CAF50; color: #fff; }
+.sub-content { display: none; animation: fadeIn 0.3s; }
+.sub-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-#dashboard {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-}
+.placeholder-box { background: #252525; padding: 40px; border-radius: 8px; text-align: center; border: 1px dashed #555; color: #aaa; }
+.placeholder-box h3 { color: #4CAF50; margin-top: 0; }
 
-.category-box {
-    background: #333;
-    padding: 15px;
-    border-radius: 8px;
-    border-top: 4px solid #4CAF50;
-}
+/* UPLOAD */
+.upload-section { background: #252525; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; border-left: 4px solid #4CAF50; flex-wrap: wrap; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+.btn-upload { background: #4a4a4a; color: #fff; padding: 10px 16px; border-radius: 5px; cursor: pointer; font-size: 0.95rem; font-weight: bold; transition: background 0.2s, transform 0.1s; border: 1px solid #555; }
+.btn-upload:hover { background: #5a5a5a; }
+.btn-upload:active { transform: translateY(1px); }
 
-.category-box h3 {
-    margin-top: 0;
-    font-size: 1.1rem;
-    border-bottom: 1px solid #444;
-    padding-bottom: 8px;
-    color: #4CAF50;
-}
+.file-info { flex-grow: 1; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+#fileNameDisplay, #gameFileNameDisplay { color: #4CAF50; font-weight: bold; font-size: 1.1rem; }
+.timestamp-text { color: #888; font-size: 0.9rem; font-style: italic; background: #2b2b2b; padding: 4px 10px; border-radius: 4px; border: 1px solid #444; }
 
-.part-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 0;
-    border-bottom: 1px solid #3d3d3d;
-    font-size: 0.9rem;
-}
+.btn-download { background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+.btn-download:hover { background: #45a049; transform: translateY(-2px); }
 
-.color-preview {
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
-    border: 2px solid #555;
-    margin-left: 10px;
-    cursor: pointer;
-    transition: transform 0.1s;
-}
+/* DASHBOARD & BOXEN */
+#dashboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; align-items: start; }
+.placeholder-text { color: #888; grid-column: 1 / -1; }
 
-.color-preview:hover {
-    transform: scale(1.2);
-    border-color: #4CAF50;
+.category-box { background: #252525; border-radius: 8px; border-top: 4px solid #4CAF50; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+.category-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #333; cursor: pointer; user-select: none; }
+.category-header:hover { background: #3d3d3d; }
+.header-left { display: flex; align-items: center; gap: 10px; }
+.category-header h3 { margin: 0; font-size: 1rem; color: #4CAF50; }
+.chevron { transition: transform 0.3s; font-size: 0.8rem; color: #888; }
+.collapsed .chevron { transform: rotate(-90deg); }
+.btn-batch { background: transparent; color: #4CAF50; border: 1px solid #4CAF50; border-radius: 4px; padding: 4px 8px; font-size: 0.75rem; cursor: pointer; }
+.btn-batch:hover { background: #4CAF50; color: #fff; }
+.category-content { padding: 0 15px 10px 15px; display: block; }
+.collapsed .category-content { display: none; }
+.part-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #3d3d3d; font-size: 0.9rem; }
+.part-item:last-child { border-bottom: none; }
+.color-preview { width: 24px; height: 24px; border-radius: 4px; border: 2px solid #555; cursor: pointer; }
+
+/* WERKSTATT & GAME EDITOR STYLES */
+.game-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; align-items: start; }
+.input-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #3d3d3d; }
+.input-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.input-group label { color: #ccc; font-size: 1rem; font-weight: 500; }
+.input-group input { background: #1e1e1e; border: 1px solid #555; color: #4CAF50; padding: 8px 12px; border-radius: 5px; font-size: 1.1rem; font-weight: bold; width: 180px; text-align: right; transition: border 0.2s; }
+.input-group input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3); }
+
+/* Custom Dropdown (Select) */
+.custom-select {
+    background: #1e1e1e; border: 1px solid #555; color: #4CAF50; padding: 8px 12px;
+    border-radius: 5px; font-size: 0.95rem; font-weight: bold; width: 250px;
+    outline: none; cursor: pointer; transition: border 0.2s;
 }
+.custom-select:focus { border-color: #4CAF50; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3); }
+.custom-select option { background: #1e1e1e; color: #fff; font-weight: normal; }
+
+/* Original-Werte Info-Badge */
+.input-info-group { display: flex; flex-direction: column; gap: 4px; }
+.orig-badge { font-size: 0.75rem; color: #888; background: #2b2b2b; padding: 2px 6px; border-radius: 4px; display: inline-block; width: fit-content; cursor: pointer; border: 1px solid #444; transition: all 0.2s; user-select: none;}
+.orig-badge:hover { color: #fff; background: #4CAF50; border-color: #4CAF50; }
+
+/* Custom Checkbox */
+.checkbox-container { display: flex; align-items: center; position: relative; padding-left: 35px; cursor: pointer; font-size: 1rem; user-select: none; margin-top: 15px; }
+.checkbox-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+.checkmark { position: absolute; top: 0; left: 0; height: 22px; width: 22px; background-color: #1e1e1e; border: 2px solid #555; border-radius: 4px; transition: all 0.2s; }
+.checkbox-container:hover input ~ .checkmark { border-color: #4CAF50; }
+.checkbox-container input:checked ~ .checkmark { background-color: #4CAF50; border-color: #4CAF50; }
+.checkmark:after { content: ""; position: absolute; display: none; }
+.checkbox-container input:checked ~ .checkmark:after { display: block; }
+.checkbox-container .checkmark:after { left: 7px; top: 3px; width: 5px; height: 10px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+
+/* FAHRZEUG ANALYSE BARS (WIE INGAME) */
+.analysis-box { border-top-color: #f39c12; }
+.analysis-box .category-header h3 { color: #f39c12; }
+
+.stat-row { display: flex; align-items: center; margin-bottom: 12px; }
+.stat-label { width: 140px; font-size: 0.85rem; color: #ccc; font-weight: 500; }
+.stat-bar-bg { flex-grow: 1; background: #333; height: 10px; border-radius: 5px; overflow: hidden; position: relative; border: 1px solid #444; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5); }
+.stat-bar-fill { height: 100%; background: linear-gradient(90deg, #f39c12, #f1c40f); width: 0%; transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+.stat-numbers { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid #333; }
+.stat-num-box { text-align: center; flex: 1; border-right: 1px solid #333; }
+.stat-num-box:last-child { border-right: none; }
+.stat-num-box .val { display: block; font-size: 1.3rem; font-weight: bold; color: #fff; margin-bottom: 4px; }
+.stat-num-box .lbl { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
