@@ -3,144 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETS2 Tool Suite</title>
+    <title>ETS2 Vehicle Editor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-wrapper">
-        <aside class="sidebar">
-            <h2 data-i18n="app_title">ETS2 Tools</h2>
-            <nav class="nav-menu">
-                <button class="nav-btn active" onclick="switchTab('tab-vehicle', this)" data-i18n="nav_vehicle">🚛 Vehicle.sii Editor</button>
-                <button class="nav-btn" onclick="switchTab('tab-game', this)" data-i18n="nav_game">🎮 Game.sii Editor</button>
-                <button class="nav-btn" onclick="switchTab('tab-decoder', this)" data-i18n="nav_decoder">🔓 SII Decoder</button>
-            </nav>
-            <div class="lang-switcher">
-                <button id="btn-lang-de" class="lang-btn" onclick="setLanguage('de')">🇩🇪 DE</button>
-                <button id="btn-lang-en" class="lang-btn" onclick="setLanguage('en')">🇬🇧 EN</button>
+        <header class="top-bar">
+            <div class="brand">
+                <div class="brand-mark" aria-hidden="true">
+                    <span class="brand-mark-inner">ETS</span>
+                </div>
+                <div class="brand-text">
+                    <h1 data-i18n="app_title">ETS2 Vehicle Editor</h1>
+                    <span class="brand-tagline" data-i18n="app_tagline">Savegame &amp; Truck Modification Suite</span>
+                </div>
             </div>
-        </aside>
+            <div class="lang-switcher" role="group" aria-label="Language">
+                <button id="btn-lang-de" class="lang-btn" type="button" onclick="setLanguage('de')">DE</button>
+                <button id="btn-lang-en" class="lang-btn" type="button" onclick="setLanguage('en')">EN</button>
+            </div>
+        </header>
 
         <main class="main-content">
-            <section id="tab-vehicle" class="tab-content active">
-                <header class="content-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
-                    <h1 data-i18n="nav_vehicle">Vehicle.sii Editor</h1>
-                    <div class="sub-nav" id="vehicleSubNav" style="display: none;">
-                        <button class="sub-btn active" onclick="switchSubTab('lackiererei', this)" data-i18n="veh_paint">🎨 Lackiererei</button>
-                        <button class="sub-btn" onclick="switchSubTab('werkstatt', this)" data-i18n="veh_workshop">🔧 Werkstatt</button>
+            <section id="vehicle-editor" class="editor-section">
+                <div class="upload-section" id="uploadSection">
+                    <div class="upload-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
                     </div>
-                </header>
-                
-                <div class="upload-section">
-                    <input type="file" id="fileInput" style="display: none;">
-                    <label for="fileInput" class="btn-upload" data-i18n="btn_choose">📁 Datei auswählen</label>
-                    <div class="file-info">
-                        <span id="fileNameDisplay" data-i18n="no_file">Keine Datei ausgewählt</span>
-                        <span id="timeStampDisplay" class="timestamp-text" style="display: none;"></span>
+                    <div class="upload-text">
+                        <span class="upload-label" data-i18n="upload_hint">Vehicle.sii Datei hochladen</span>
+                        <span id="fileNameDisplay" class="upload-status" data-i18n="no_file">Keine Datei ausgewählt</span>
+                        <span id="timeStampDisplay" class="timestamp-text" hidden></span>
                     </div>
-                    <button id="btnDownload" class="btn-download" style="display: none;" data-i18n="btn_download">📥 Datei herunterladen</button>
+                    <input type="file" id="fileInput" accept=".sii,.txt" hidden>
+                    <label for="fileInput" class="btn btn-secondary" data-i18n="btn_choose">Datei auswählen</label>
+                    <button id="btnDownload" class="btn btn-primary" type="button" hidden data-i18n="btn_download">Download</button>
                 </div>
-                
-                <div id="vehiclePlaceholder" class="placeholder-box"><p data-i18n="placeholder">Bitte lade eine Datei hoch...</p></div>
 
-                <div id="lackiererei" class="sub-content active">
+                <div id="errorBanner" class="error-banner" hidden>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <span id="errorBannerText"></span>
+                </div>
+
+                <div id="vehiclePlaceholder" class="placeholder-box">
+                    <div class="placeholder-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                    <p data-i18n="placeholder">Bitte lade eine Vehicle.sii Datei hoch, um zu starten.</p>
+                    <p class="placeholder-hint" data-i18n="placeholder_hint">Die Datei muss entschlüsselt sein (Klartext-Format).</p>
+                </div>
+
+                <div id="vehicleSubNav" class="sub-nav" role="tablist" hidden>
+                    <button class="sub-btn" type="button" role="tab" onclick="switchSubTab('werkstatt', this)" data-i18n="veh_workshop">Werkstatt</button>
+                    <button class="sub-btn" type="button" role="tab" onclick="switchSubTab('lackiererei', this)" data-i18n="veh_paint">Lackiererei</button>
+                </div>
+
+                <div id="lackiererei" class="sub-content" role="tabpanel">
+                    <div class="selection-bar" id="selectionBar">
+                        <div class="selection-info">
+                            <span class="selection-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </span>
+                            <span id="selectionCountText">0 Teile ausgewählt</span>
+                        </div>
+                        <div class="selection-actions">
+                            <button class="btn btn-ghost btn-sm" type="button" id="btnSelectAll" data-i18n="btn_select_all">Alle auswählen</button>
+                            <button class="btn btn-ghost btn-sm" type="button" id="btnClearSelection" data-i18n="btn_clear_selection">Zurücksetzen</button>
+                            <button class="btn btn-primary btn-sm" type="button" id="btnPaintSelection" data-i18n="btn_paint_selection" disabled>Auswahl färben</button>
+                        </div>
+                    </div>
                     <div id="dashboard"></div>
                 </div>
 
-                <div id="werkstatt" class="sub-content">
-                    <div class="game-dashboard-grid" style="grid-template-columns: 1fr 1fr;">
-                        <div class="left-col" style="display: flex; flex-direction: column; gap: 20px;">
-                            <div class="category-box">
-                                <div class="category-header"><div class="header-left"><h3 data-i18n="ws_drivetrain">Antriebsstrang</h3></div></div>
-                                <div class="category-content" style="padding-top: 20px;">
+                <div id="werkstatt" class="sub-content" role="tabpanel">
+                    <div class="workshop-grid">
+                        <div class="workshop-col">
+                            <article class="category-box">
+                                <header class="category-header static">
+                                    <div class="header-left">
+                                        <span class="category-dot" aria-hidden="true"></span>
+                                        <h3 data-i18n="ws_drivetrain">Antriebsstrang</h3>
+                                    </div>
+                                </header>
+                                <div class="category-content">
                                     <div class="input-group">
-                                        <label data-i18n="ws_engine">Motor:</label>
+                                        <label for="selEngine" data-i18n="ws_engine">Motor</label>
                                         <select id="selEngine" class="custom-select" onchange="updateTruckStats()">
-                                            <option value="keep" data-i18n="keep_orig">-- Original beibehalten --</option>
-                                            <option value="/def/vehicle/truck/volvo.fh16_2024/engine/d17_780.sii">Volvo 780 PS (D17 780)</option>
-                                            <option value="/def/vehicle/truck/scania.s_2016/engine/dc16_770.sii">Scania 770 PS V8</option>
-                                            <option value="/def/vehicle/truck/volvo.fh16_2012/engine/d16g750.sii">Volvo 750 PS</option>
-                                            <option value="/def/vehicle/truck/mercedes.actros2014/engine/engine_1863.sii">Mercedes 625 PS</option>
+                                            <option value="keep" data-i18n="keep_orig">— Original beibehalten —</option>
+                                            <option value="/def/vehicle/truck/volvo.fh_2024/engine/d17a780.sii">Volvo FH 2024 — 780 PS (D17A)</option>
+                                            <option value="/def/vehicle/truck/volvo.fh16_2012/engine/d16g750.sii">Volvo FH16 2012 — 750 PS</option>
+                                            <option value="/def/vehicle/truck/scania.s_2016/engine/dc16_770.sii">Scania S — 770 PS V8</option>
+                                            <option value="/def/vehicle/truck/mercedes.actros2014/engine/engine_1863.sii">Mercedes Actros — 625 PS</option>
                                         </select>
                                     </div>
                                     <div class="input-group">
-                                        <label data-i18n="ws_transmission">Getriebe:</label>
+                                        <label for="selTrans" data-i18n="ws_transmission">Getriebe</label>
                                         <select id="selTrans" class="custom-select" onchange="updateTruckStats()">
-                                            <option value="keep" data-i18n="keep_orig">-- Original beibehalten --</option>
+                                            <option value="keep" data-i18n="keep_orig">— Original beibehalten —</option>
                                             <option value="/def/vehicle/truck/scania.s_2016/transmission/grso925r.sii">Scania 12+2-Gang + Ret.</option>
+                                            <option value="/def/vehicle/truck/man.tgx_2020/transmission/allison_retarder.sii">MAN Allison + Ret.</option>
                                             <option value="/def/vehicle/truck/peterbilt.579/transmission/allison.sii">Allison 6-Gang</option>
                                             <option value="/def/vehicle/truck/volvo.fh16_2012/transmission/12_speed_ret.sii">Volvo 12-Gang + Ret.</option>
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="category-box">
-                                <div class="category-header"><div class="header-left"><h3 data-i18n="ws_chassis_box">Fahrgestell</h3></div></div>
-                                <div class="category-content" style="padding-top: 20px;">
+                            </article>
+
+                            <article class="category-box">
+                                <header class="category-header static">
+                                    <div class="header-left">
+                                        <span class="category-dot" aria-hidden="true"></span>
+                                        <h3 data-i18n="ws_chassis_box">Fahrgestell</h3>
+                                    </div>
+                                </header>
+                                <div class="category-content">
                                     <div class="input-group">
-                                        <label data-i18n="ws_chassis">Achsen:</label>
+                                        <label for="selChassis" data-i18n="ws_chassis">Achsen</label>
                                         <select id="selChassis" class="custom-select">
-                                            <option value="keep" data-i18n="keep_orig">-- Original beibehalten --</option>
+                                            <option value="keep" data-i18n="keep_orig">— Original beibehalten —</option>
                                         </select>
                                     </div>
-                                    <p id="chassisWarn" style="color: #f39c12; font-size: 0.8rem; margin-top: 10px; display: none;">
-                                        ⚠️ Hinweis: Nach einem Chassis-Wechsel können Anbauteile verschoben sein. Optimiere diese ingame in der Werkstatt.
+                                    <p id="chassisWarn" class="warning-note" data-i18n="chassis_warn" hidden>
+                                        Hinweis: Nach einem Chassis-Wechsel können Anbauteile verschoben sein. Optimiere diese ingame in der Werkstatt.
                                     </p>
                                 </div>
-                            </div>
+                            </article>
                         </div>
 
-                        <div class="category-box analysis-box">
-                            <div class="category-header"><div class="header-left"><h3 data-i18n="stat_analysis">Analyse</h3></div></div>
-                            <div class="category-content" style="padding-top: 20px;">
-                                <div class="stat-row"><span class="stat-label" data-i18n="stat_normal">Normal</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="barNormal"></div></div></div>
-                                <div class="stat-row"><span class="stat-label" data-i18n="stat_heavy">Schwerlast</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="barHeavy"></div></div></div>
-                                <div class="stat-row"><span class="stat-label" data-i18n="stat_maneuver">Wendigkeit</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="barMan"></div></div></div>
-                                <div class="stat-row"><span class="stat-label" data-i18n="stat_hill">Steigung</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="barHill"></div></div></div>
-                                <div class="stat-row"><span class="stat-label" data-i18n="stat_terrain">Gelände</span><div class="stat-bar-bg"><div class="stat-bar-fill" id="barTerrain"></div></div></div>
+                        <article class="category-box analysis-box">
+                            <header class="category-header static">
+                                <div class="header-left">
+                                    <span class="category-dot accent" aria-hidden="true"></span>
+                                    <h3 data-i18n="stat_analysis">Analyse</h3>
+                                </div>
+                            </header>
+                            <div class="category-content">
+                                <div class="stat-rows">
+                                    <div class="stat-row">
+                                        <span class="stat-label" data-i18n="stat_normal">Normal</span>
+                                        <div class="stat-bar-bg"><div class="stat-bar-fill" id="barNormal"></div></div>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label" data-i18n="stat_heavy">Schwerlast</span>
+                                        <div class="stat-bar-bg"><div class="stat-bar-fill" id="barHeavy"></div></div>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label" data-i18n="stat_maneuver">Wendigkeit</span>
+                                        <div class="stat-bar-bg"><div class="stat-bar-fill" id="barMan"></div></div>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label" data-i18n="stat_hill">Steigung</span>
+                                        <div class="stat-bar-bg"><div class="stat-bar-fill" id="barHill"></div></div>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label" data-i18n="stat_terrain">Gelände</span>
+                                        <div class="stat-bar-bg"><div class="stat-bar-fill" id="barTerrain"></div></div>
+                                    </div>
+                                </div>
                                 <div class="stat-numbers">
-                                    <div class="stat-num-box"><span class="val" id="valPower">---</span><span class="lbl" data-i18n="stat_power">PS</span></div>
-                                    <div class="stat-num-box"><span class="val" id="valTorque">---</span><span class="lbl" data-i18n="stat_torque">Nm</span></div>
-                                    <div class="stat-num-box"><span class="val" id="valGears">---</span><span class="lbl" data-i18n="stat_gears">Gänge</span></div>
+                                    <div class="stat-num-box">
+                                        <span class="val" id="valPower">—</span>
+                                        <span class="lbl" data-i18n="stat_power">PS</span>
+                                    </div>
+                                    <div class="stat-num-box">
+                                        <span class="val" id="valTorque">—</span>
+                                        <span class="lbl" data-i18n="stat_torque">Nm</span>
+                                    </div>
+                                    <div class="stat-num-box">
+                                        <span class="val" id="valGears">—</span>
+                                        <span class="lbl" data-i18n="stat_gears">Gänge</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     </div>
                 </div>
-            </section>
-
-            <section id="tab-game" class="tab-content">
-                <header class="content-header"><h1 data-i18n="nav_game">Game.sii Editor</h1></header>
-                <div class="upload-section">
-                    <input type="file" id="gameFileInput" style="display: none;">
-                    <label for="gameFileInput" class="btn-upload" data-i18n="btn_choose_game">📁 Game.sii wählen</label>
-                    <div class="file-info"><span id="gameFileNameDisplay" data-i18n="no_file">Keine Datei ausgewählt</span></div>
-                    <button id="btnGameDownload" class="btn-download" style="display: none;" data-i18n="btn_download">📥 Datei herunterladen</button>
-                </div>
-                <div id="gameDashboard" style="display: none;" class="game-dashboard-grid">
-                    <div class="category-box">
-                        <div class="category-header"><div class="header-left"><h3 data-i18n="game_profile">Profil</h3></div></div>
-                        <div class="category-content" style="padding-top: 20px;">
-                            <div class="input-group"><div class="input-info-group"><label data-i18n="game_money">Geld (€):</label><span class="orig-badge" id="origMoneyBadge" onclick="resetMoney()">Orig: 0</span></div><input type="number" id="inpMoney"></div>
-                            <div class="input-group"><div class="input-info-group"><label data-i18n="game_level">Level:</label></div><input type="number" id="inpLevel"></div>
-                            <div class="input-group"><div class="input-info-group"><label data-i18n="game_xp">XP:</label><span class="orig-badge" id="origXpBadge" onclick="resetXp()">Orig: 0</span></div><input type="number" id="inpXp"></div>
-                        </div>
-                    </div>
-                    <div class="category-box">
-                        <div class="category-header"><div class="header-left"><h3 data-i18n="game_maintenance">Wartung</h3></div></div>
-                        <div class="category-content" style="padding-top: 20px;">
-                            <label class="checkbox-container"><input type="checkbox" id="chkRepair"><span class="checkmark"></span><span data-i18n="game_repair_btn">Alles reparieren</span></label>
-                        </div>
-                    </div>
-                </div>
-                <div id="gamePlaceholder" class="placeholder-box"><p data-i18n="placeholder_game">Bitte lade eine entschlüsselte game.sii hoch...</p></div>
-            </section>
-
-            <section id="tab-decoder" class="tab-content">
-                <iframe src="https://sii-decode.github.io/" style="width: 100%; height: 800px; border: none;"></iframe>
             </section>
         </main>
+
+        <footer class="app-footer">
+            <span data-i18n="footer_text">ETS2 Vehicle Editor</span>
+            <span class="footer-sep">·</span>
+            <span class="footer-version">v1.2</span>
+        </footer>
     </div>
+
+    <div id="customColorModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+        <div class="modal-box">
+            <h3 id="modalTitle" class="modal-title">Farbe</h3>
+            <div class="color-compare">
+                <div class="color-compare-half" id="modalOldColor">
+                    <span class="color-compare-label" data-i18n="modal_old">Alt</span>
+                </div>
+                <div class="color-compare-half" id="modalNewColor">
+                    <span class="color-compare-label" data-i18n="modal_new">Neu</span>
+                </div>
+            </div>
+            <div class="visual-picker-container">
+                <input type="color" id="masterColorPicker" class="master-color-picker" aria-label="Color picker">
+            </div>
+            <div class="slider-group">
+                <label for="sliderR"><span class="slider-name">R</span><span class="slider-val" id="valR">0</span></label>
+                <input type="range" id="sliderR" min="0" max="255" value="0">
+            </div>
+            <div class="slider-group">
+                <label for="sliderG"><span class="slider-name">G</span><span class="slider-val" id="valG">0</span></label>
+                <input type="range" id="sliderG" min="0" max="255" value="0">
+            </div>
+            <div class="slider-group">
+                <label for="sliderB"><span class="slider-name">B</span><span class="slider-val" id="valB">0</span></label>
+                <input type="range" id="sliderB" min="0" max="255" value="0">
+            </div>
+            <div class="modal-code" id="modalScsCode">SCS: (0, 0, 0)</div>
+            <div class="modal-buttons">
+                <button id="btnCancel" type="button" class="btn btn-ghost" data-i18n="modal_cancel">Abbruch</button>
+                <button id="btnSave" type="button" class="btn btn-primary" data-i18n="modal_save">Speichern</button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
